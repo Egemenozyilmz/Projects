@@ -1,0 +1,73 @@
+---
+title: "R project"
+format: html
+editor: visual
+---
+
+```{r}
+library(readxl)
+TıbbiAtık <- read_excel("C:/Users/oyund/OneDrive/Desktop/veriler/TıbbiAtık.xlsx")
+View(TıbbiAtık)
+```
+
+```{r}
+print("Orjinal Veriseti")
+print(TıbbiAtık)
+```
+
+```{r}
+set.seed(123)
+Rastgelesil <- 4
+
+
+for (i in 1:Rastgelesil){
+  row_index <- sample(1:nrow(TıbbiAtık), 1)
+  col_index <- sample(1:ncol(TıbbiAtık), 1)
+}
+cat("Row Index:", row_index, "\n")
+cat("Column Index", col_index, "\n")
+
+TıbbiAtık[row_index, col_index] <- NA
+
+print("Değiştirilmiş Data")
+print(TıbbiAtık)
+```
+
+```{r}
+library(VIM)
+TıbbiAtıkImputed <- kNN(TıbbiAtık, k = 3)
+print(TıbbiAtıkImputed)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+ uzun_veri <- TıbbiAtıkImputed %>%
+   pivot_longer(cols = -İlçe, names_to = "Year", values_to = "Value") %>%
+   mutate(Year = as.numeric(Year))
+
+ print("Uzun veriseti")
+ print(uzun_veri)
+ 
+```
+
+```{r}
+ggplot(uzun_veri, aes(x = Year, y = Value, color = İlçe))+
+  geom_line()+
+  labs(title = "İlçelere göre zaman serisi grafiği", x = "Yıl", y= "Değer")
+```
+
+```{r}
+ggplot(uzun_veri, aes(x = İlçe, y = Value, fill = factor(Year))) +
+  geom_boxplot() +
+  labs(title = "Kutu Grafiği", x = "İlçeler", y = "Değerler", fill = "Yıl")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+```{r}
+ggplot(uzun_veri, aes(x = İlçe, y = Value, fill = factor(Year))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Gruplanmış Çubuk Grafiği", x = "İlçeler", y = "Değerler", fill = "Yıl")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
